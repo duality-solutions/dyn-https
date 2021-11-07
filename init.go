@@ -73,7 +73,7 @@ func Init(version, githash string) error {
 	util.Info.Println("Version:", version, "Hash", githash)
 	util.Info.Println("OS: ", runtime.GOOS)
 	if debug {
-		util.Info.Println("Running %v in debug log mode.", DefaultName)
+		util.Info.Println("Running", DefaultName, "in debug log mode.")
 		util.Info.Println("Args", args)
 	}
 	if test {

@@ -2,6 +2,7 @@ package dynamic
 
 import (
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"dyn-https/util"
@@ -22,54 +23,35 @@ func downloadBinaries(_os, dynDir, dynamicName, cliName, archiveExt string) erro
 		} else {
 			util.Info.Println("Compressed binary found")
 		}
-
-		var dir []string
+		var binaries []string
+		// move keep files to const and eventually a yaml file
+		var keepFiles = []string{"bin/dynamicd", "bin/dynamic-cli"}
 		var errDecompress error
+		// todo test if Windows works with keep files
 		if _os == "Windows" {
 			// unzip archive file
-			dir, errDecompress = util.Unzip(binPath, dynDir)
+			binaries, errDecompress = util.Unzip(binPath, dynDir)
 			if errDecompress != nil {
 				util.Error.Println("Error unzipping file.", binPath, errDecompress)
 				return errDecompress
 			}
 		} else {
 			// Extract tar.gz archive file
-			dir, errDecompress = util.ExtractTarGz(binPath, dynDir)
+			binaries, errDecompress = util.ExtractTarGz(binPath, dynDir, keepFiles)
 			if errDecompress != nil {
-				util.Error.Println("Error decompressing file.", binPath, errDecompress)
+				util.Error.Println("Error decompressing file. binPath: ", binPath, " dynDir: ", dynDir, " Error: ", errDecompress)
 				return errDecompress
 			}
 		}
-
-		// extract dynamicd.exe dynamid-cli.exe and move
-		for _, v := range dir {
-			if strings.HasSuffix(v, dynamicdName) {
-				util.Info.Println("Found", v, "Moving to correct directory")
-				errMove := util.MoveFile(v, dynDir+dynamicdName)
-				if errMove != nil {
-					util.Error.Println("Error moving", v, errMove)
-					return errMove
-				}
-				if _os != "Windows" {
-					cmd := exec.Command("chmod", "+x", dynDir+dynamicdName)
-					errRun := cmd.Run()
-					if errRun != nil {
-						util.Error.Println("Error running chmod for", dynDir+dynamicdName, errRun)
-					}
-				}
-			} else if strings.HasSuffix(v, cliName) {
-				util.Info.Println("Found", v, "Moving to correct directory")
-				errMove := util.MoveFile(v, dynDir+cliName)
-				if errMove != nil {
-					util.Error.Println("Error moving", v, errMove)
-					return errMove
-				}
-				if _os != "Windows" {
-					cmd := exec.Command("chmod", "+x", dynDir+cliName)
-					errRun := cmd.Run()
-					if errRun != nil {
-						util.Error.Println("Error running chmod for", dynDir+cliName, errRun)
-					}
+		util.Info.Println("downloadBinaries keep file", keepFiles)
+		for _, v := range binaries {
+			util.Info.Println("downloadBinaries keep file", v)
+			if _os != "Windows" {
+				util.Info.Println("downloadBinaries chmod ", dynDir+filepath.Base(v), " GetFileNameFromPath ", filepath.Base(v))
+				cmd := exec.Command("chmod", "+x", dynDir+filepath.Base(v))
+				errRun := cmd.Run()
+				if errRun != nil {
+					util.Error.Println("Error running chmod for", dynDir+v, errRun)
 				}
 			}
 		}

@@ -17,11 +17,11 @@ import (
 const (
 	binaryRepo        string = "https://github.com/duality-solutions/Dynamic"
 	binaryReleasePath string = "releases/download"
-	binaryVersion     string = "2.4.4.2"
-	winDyndHash       string = "KuHhwzO4OinWd6AD5xRAoDYG+T7RhNISXAocSBd+XlQ="
-	winDynCliHash     string = "AdSfB1vGR9dOsuAWNyQ0yJ3m5rsypKrF8lMmdd5/qec="
-	linuxDyndHash     string = "p/ruW+P3hGeq6+lc7l9B1bRQRbEIm3WelfM9I7ws4Io="
-	linuxDynCliHash   string = "cMN/8n5Pguq0j305Lm7iEHohfIgrhIxWpvlFkGf00Js="
+	binaryVersion     string = "2.5.0.0"
+	winDyndHash       string = ""
+	winDynCliHash     string = ""
+	linuxDyndHash     string = "Vnu4N3wZfqWGZFs8PlxTJr079zIEfmdV2564GCPORj8="
+	linuxDynCliHash   string = "pjBmRp0M1j8Xzmw5EoMI8bMQ02zu4vhJKTlGoq9bKxc="
 	macDyndHash       string = ""
 	macDynCliHash     string = ""
 
@@ -153,7 +153,7 @@ func loadDynamicd(_os, archiveExt string) (*Dynamicd, error) {
 	} else {
 		// read username and password from config file
 		var userFound, passFound bool = false, false
-		configPath := dataDirPath + dirDelimit + "dynamic.conf"
+		configPath := dataDirPath + "dynamic.conf"
 		conf, err := GetDynamicConfig(configPath)
 		if err == nil {
 			user, err := ParseDynamicConfigValue(conf, "rpcuser=")

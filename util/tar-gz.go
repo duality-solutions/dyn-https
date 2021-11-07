@@ -3,53 +3,66 @@ package util
 import (
 	"archive/tar"
 	"compress/gzip"
-	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 )
 
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
 // ExtractTarGz extracts the tar.gz file passed in path parameter
-func ExtractTarGz(src string, dest string) ([]string, error) {
+func ExtractTarGz(src string, dest string, keep []string) ([]string, error) {
 	var filenames []string
+	//var directories []string
 	gzipStream, err := os.Open(src)
 	if err != nil {
+		Error.Println("ExtractTarGz gzipStream Open err", err)
 		return filenames, err
 	}
 	uncompressedStream, err := gzip.NewReader(gzipStream)
 	if err != nil {
+		Error.Println("ExtractTarGz NewReader err", err)
 		return filenames, err
 	}
 
 	tarReader := tar.NewReader(uncompressedStream)
-
 	for true {
 		header, err := tarReader.Next()
 
 		if err == io.EOF {
 			break
 		}
-
 		if err != nil {
-			return filenames, err
+			break
 		}
-
 		switch header.Typeflag {
-		case tar.TypeDir:
-			if err := os.Mkdir(dest+header.Name, 0755); err != nil {
-				return filenames, err
-			}
 		case tar.TypeReg:
-			outFile, err := os.Create(dest + header.Name)
-			if err != nil {
-				return filenames, err
+			if contains(keep, header.Name) {
+				// if in keep array
+				file := dest + filepath.Base(header.Name)
+				Info.Println("ExtractTarGz file", file)
+				outFile, err := os.Create(file)
+				if err != nil {
+					Error.Println("ExtractTarGz Create error", err)
+					continue
+				}
+				if _, err := io.Copy(outFile, tarReader); err != nil {
+					Error.Println("ExtractTarGz Copy error", err)
+					continue
+				}
+				outFile.Close()
+				filenames = append(filenames, header.Name)
 			}
-			if _, err := io.Copy(outFile, tarReader); err != nil {
-				return filenames, err
-			}
-			outFile.Close()
-			filenames = append(filenames, dest+header.Name)
+
 		default:
-			return filenames, fmt.Errorf("ExtractTarGz: uknown type: %b in %s", header.Typeflag, header.Name)
+			continue
 		}
 	}
 	// Close the file without defer to close before next iteration of loop
