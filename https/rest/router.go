@@ -94,9 +94,9 @@ func setupAdminWebConsole() {
 // @contact.email support@duality.solutions
 
 // @license.name Duality
-// @license.url https://github.com/duality-solutions/web-bridge/blob/master/LICENSE.md
+// @license.url https://github.com/duality-solutions/dyn-https/blob/master/LICENSE.md
 
-// @host http://docs.webbridge.duality.solutions
+// @host http://docs.dyn-https.duality.solutions
 // @BasePath /api/v1
 //func setupSwagger() {
 //	address := runner.configuration.WebServer().AddressPortRawString() + "/swagger/doc.json"

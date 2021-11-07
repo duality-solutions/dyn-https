@@ -22,7 +22,7 @@ const (
 var homeDir string = ""
 var pathSeperator string = ""
 
-// HomeDir returns the web-bridge home directory
+// HomeDir returns the dyn-https home directory
 func HomeDir() string {
 	return homeDir
 }
