@@ -1,0 +1,15 @@
+sudo: required
+dist: bionic
+language: go
+go:
+  - "1.14.x"
+cache:
+  apt: true
+jobs:
+  include:
+      - stage: build
+        name: 'Ubuntu 18 Main GoLang Build Test'
+        script:
+          - go run -race . -debug -test # test run with race
+          - go build -i -v -ldflags="-X 'main.GitHash=$(git describe --always --long --dirty)' -X 'main.Version=$(date +'%y.%m.%d')'" github.com/duality-solutions/dyn-https
+          - ./dyn-https -debug -test
