@@ -19,11 +19,11 @@
 # vendor/
 
 # setting configuration file
-.webbridge.settings.json
+.dyn-https.settings.json
 
 # Binaries
 dynamic/*
-web-bridge
+dyn-https
 
 # Log files
 debug.log
