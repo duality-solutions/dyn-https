@@ -49,7 +49,7 @@ func FindProcess(wbname string) (bool, int32, error) {
 		if process.Pid != thisPID {
 			name, _ := process.Name()
 			if strings.Contains(name, wbname) {
-				fmt.Println("FindWebBridgeProcess found", name)
+				fmt.Println("FindWebProxyProcess found", name)
 				return true, process.Pid, nil
 			}
 		}

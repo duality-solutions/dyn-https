@@ -8,6 +8,7 @@ import (
 
 	"dyn-https/blockchain/dynamic"
 	"dyn-https/configs/settings"
+	_ "dyn-https/docs" // used for Swagger documentation
 
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
@@ -56,6 +57,7 @@ func startWebServiceRoutes() {
 	setupBlockchainRoutes(version)
 	setupWalletRoutes(version)
 	setupConfigRoutes(version)
+	setupSwagger()
 	startGinGonic()
 }
 
@@ -86,10 +88,10 @@ func setupAdminWebConsole() {
 	runner.router.Use(static.Serve("/admin", static.LocalFile("./web/build", true)))
 }
 
-// @title WebBridge Restful API Documentation
+// @title DYN HTTPS Restful API Documentation
 // @version 1.0
-// @description WebBridge Rest API discovery website.
-// @termsOfService http://www.duality.solutions/webbridge/terms
+// @description DYN HTTPS Rest API discovery website.
+// @termsOfService http://www.duality.solutions/dynhttps/terms
 
 // @contact.name API Support
 // @contact.url http://www.duality.solutions/support

@@ -151,7 +151,7 @@ func (w *WebProxy) GetAccountOverview() (*models.AccountOverview, int, error) {
 }
 
 //
-// @Description Returns the current WebBridge overview status
+// @Description Returns the current DYN HTTPS overview status
 // @Accept  json
 // @Produce  json
 // @Success 200 {object} models.OverviewResponse "ok"

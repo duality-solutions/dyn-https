@@ -1,0 +1,392 @@
+basePath: /api/v1
+definitions:
+  models.AccountOverview:
+    properties:
+      audits:
+        type: integer
+      certificates:
+        type: integer
+      complete_links:
+        type: integer
+      pending_links:
+        type: integer
+      users:
+        type: integer
+    type: object
+  models.BlockchainOverview:
+    properties:
+      blocks:
+        type: integer
+      client_version:
+        type: integer
+      fully_synced:
+        type: boolean
+      network:
+        type: string
+      peers:
+        type: integer
+      status_description:
+        type: string
+      sync_progress:
+        type: number
+      total_blocks:
+        type: integer
+    type: object
+  models.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  models.ImportMnemonicRequest:
+    properties:
+      language:
+        description: 'Language (string, optional: english|french|chinesesimplified|chinesetraditional|italian|japanese|korean|spanish)'
+        type: string
+      mnemonic:
+        description: Mnemonic (string, required) mnemonic delimited by the dash charactor
+          (-) or space. Use 12 or 24 words
+        type: string
+      passphrase:
+        description: Passphrase (string, optional) mnemonic passphrase used as the
+          13th or 25th word
+        type: string
+    type: object
+  models.MnemonicResponse:
+    properties:
+      hdseed:
+        description: HDSeed (string, required) deterministic wallet seed
+        type: string
+      mnemonic:
+        description: Mnemonic (string, required) mnemonic associated with HD seed
+        type: string
+      mnemonicpassphrase:
+        description: MnemonicPassphrase (string, optional)  mnemonic passphrase used
+          as the 13th or 25th word
+        type: string
+    type: object
+  models.OverviewResponse:
+    properties:
+      accounts:
+        $ref: '#/definitions/models.AccountOverview'
+      chain:
+        $ref: '#/definitions/models.BlockchainOverview'
+      wallet:
+        $ref: '#/definitions/models.WalletOverview'
+    type: object
+  models.TransactionsResponse:
+    properties:
+      Amount:
+        type: number
+      Category:
+        type: string
+      account:
+        type: string
+      address:
+        type: string
+      bip125-replaceable:
+        type: string
+      blockhash:
+        type: string
+      blockindex:
+        type: integer
+      blocktime:
+        type: integer
+      confirmations:
+        type: integer
+      instantlock:
+        type: boolean
+      label:
+        type: string
+      time:
+        type: integer
+      timereceived:
+        type: integer
+      txid:
+        type: string
+      vout:
+        type: integer
+      walletconflicts:
+        items:
+          type: string
+        type: array
+    type: object
+  models.WalletAddressResponse:
+    properties:
+      address:
+        description: Address (string, required) wallet address
+        type: string
+    type: object
+  models.WalletOverview:
+    properties:
+      available_balance:
+        type: number
+      credits:
+        type: number
+      deposits:
+        type: number
+      encrypted:
+        type: boolean
+      pending_balance:
+        type: number
+      total_balance:
+        type: number
+      transactions:
+        type: integer
+      unlockedepoch:
+        type: integer
+    type: object
+  models.WalletSetupStatus:
+    properties:
+      HasAccounts:
+        type: boolean
+      HasLinks:
+        type: boolean
+      HasTransactions:
+        type: boolean
+      MnemonicBackup:
+        type: boolean
+      UnlockedUntil:
+        type: integer
+      WalletEncrypted:
+        type: boolean
+    type: object
+  models.WebServerConfig:
+    properties:
+      allowCIDR:
+        type: string
+      bindAddress:
+        type: string
+      listenPort:
+        type: integer
+    type: object
+  models.WebServerRestartRequest:
+    properties:
+      restart_epoch:
+        type: integer
+    type: object
+host: http://docs.dyn-https.duality.solutions
+info:
+  contact:
+    email: support@duality.solutions
+    name: API Support
+    url: http://www.duality.solutions/support
+  description: DYN HTTPS Rest API discovery website.
+  license:
+    name: Duality
+    url: https://github.com/duality-solutions/dyn-https/blob/master/LICENSE.md
+  termsOfService: http://www.duality.solutions/dynhttps/terms
+  title: DYN HTTPS Restful API Documentation
+  version: "1.0"
+paths:
+  /api/v1/config/web:
+    get:
+      consumes:
+      - application/json
+      description: Returns the internal web server's settings for the current running
+        configuration
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.WebServerConfig'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+    post:
+      consumes:
+      - application/json
+      description: Updates the internal web server's settings for the current running
+        configuration
+      parameters:
+      - description: WebServer
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.WebServerConfig'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.WebServerConfig'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /api/v1/config/web/restart:
+    put:
+      consumes:
+      - application/json
+      description: Restarts the internal web server using the current configuration
+      parameters:
+      - description: RestartEpoch
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.WebServerRestartRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /api/v1/overview:
+    get:
+      consumes:
+      - application/json
+      description: Returns the current DYN HTTPS overview status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.OverviewResponse'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /api/v1/wallet/defaultaddress:
+    get:
+      consumes:
+      - application/json
+      description: Returns a default standard wallet address
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.WalletAddressResponse'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /api/v1/wallet/mnemonic:
+    get:
+      consumes:
+      - application/json
+      description: Shows the current wallet mnemonic and HD information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.MnemonicResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+    post:
+      consumes:
+      - application/json
+      description: Replaces the current wallet mnemonic with a new mnemonic
+      parameters:
+      - description: Mnemonic
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.ImportMnemonicRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /api/v1/wallet/setup:
+    get:
+      consumes:
+      - application/json
+      description: Returns the current wallet setup status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.WalletSetupStatus'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /api/v1/wallet/setup/backup:
+    post:
+      consumes:
+      - application/json
+      description: Updates the wallet setup backup mnemonic configuration to true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.WalletSetupStatus'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /api/v1/wallet/transactions:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of transactions received or sent from this wallet
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            items:
+              $ref: '#/definitions/models.TransactionsResponse'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+swagger: "2.0"

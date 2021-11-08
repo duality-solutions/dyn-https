@@ -36,7 +36,7 @@ func (a *AppShutdown) ShutdownAppliction() {
 func (w *WebProxy) shutdown(c *gin.Context) {
 	if w.shutdownApp != nil {
 		w.shutdownApp.ShutdownAppliction()
-		c.JSON(http.StatusOK, gin.H{"result": "WebBridge is shutting down."})
+		c.JSON(http.StatusOK, gin.H{"result": "DYN HTTPS is shutting down."})
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Configuration variable shutdownApp is null."})
 	}
