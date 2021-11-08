@@ -11,6 +11,8 @@ import (
 
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 // WebBridgeRunner is used to run the node application.
@@ -98,11 +100,12 @@ func setupAdminWebConsole() {
 
 // @host http://docs.dyn-https.duality.solutions
 // @BasePath /api/v1
-//func setupSwagger() {
-//	address := runner.configuration.WebServer().AddressPortRawString() + "/swagger/doc.json"
-//	url := ginSwagger.URL(address)
-//	runner.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
-//}
+
+func setupSwagger() {
+	address := runner.configuration.WebServer().AddressPortRawString() + "/swagger/doc.json"
+	url := ginSwagger.URL(address)
+	runner.router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+}
 
 // TODO: follow https://rest.bitcoin.com for rest endpoints
 func setupBlockchainRoutes(currentVersion *gin.RouterGroup) {
