@@ -9,14 +9,17 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"fmt"
+	"log"
 	"math/big"
 	"net/http"
+	"strings"
 	"time"
 
 	"dyn-https/blockchain/dynamic"
 	"dyn-https/configs/settings"
 	_ "dyn-https/docs" // used for Swagger documentation
 
+	"github.com/gin-gonic/autotls"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -68,9 +71,18 @@ func startWebServiceRoutes() {
 	startGinGonic()
 }
 
+func setupLetsEncrypt(r *gin.Engine, domains []string) {
+	// Ping handler
+	r.GET("/ping", func(c *gin.Context) {
+		c.String(http.StatusOK, "pong")
+	})
+	log.Fatal(autotls.Run(r, domains...))
+}
+
 func getSelfSignedCert() tls.Certificate {
 	cert := &x509.Certificate{
 		SerialNumber: big.NewInt(1658),
+		// todo: get the cert values from config
 		Subject: pkix.Name{
 			Organization:  []string{"Duality Blockchain Solutions"},
 			Country:       []string{"USA"},
@@ -100,17 +112,32 @@ func getSelfSignedCert() tls.Certificate {
 }
 
 func startGinGonic() {
-	cert := getSelfSignedCert()
-	runner.server = &http.Server{
-		Addr:    runner.configuration.WebServer().AddressPortString(),
-		Handler: runner.router,
-		TLSConfig: &tls.Config{
-			Certificates: []tls.Certificate{cert},
-		},
-	}
-	// Start HTTPS service
-	if err := runner.server.ListenAndServeTLS("", ""); err != nil && err != http.ErrServerClosed {
-		panic(fmt.Errorf("ListenAndServe failed: %v", err))
+	switch strings.ToLower(runner.mode) {
+	case "debug":
+		cert := getSelfSignedCert()
+		runner.server = &http.Server{
+			Addr:    runner.configuration.WebServer().AddressPortString(),
+			Handler: runner.router,
+			TLSConfig: &tls.Config{
+				Certificates: []tls.Certificate{cert},
+			},
+		}
+		// Start HTTPS service
+		if err := runner.server.ListenAndServeTLS("", ""); err != nil && err != http.ErrServerClosed {
+			panic(fmt.Errorf("ListenAndServe failed: %v", err))
+		}
+	case "release":
+		// todo: get the domains from config
+		domains := []string{"dynhttps.dualityblocks.com", "dyn.pix.dualityblocks.com"}
+		setupLetsEncrypt(runner.router, domains)
+		runner.server = &http.Server{
+			Addr:    runner.configuration.WebServer().AddressPortString(),
+			Handler: runner.router,
+		}
+		// Start HTTPS service
+		if err := runner.server.ListenAndServeTLS("", ""); err != nil && err != http.ErrServerClosed {
+			panic(fmt.Errorf("ListenAndServe failed: %v", err))
+		}
 	}
 }
 
