@@ -2,7 +2,14 @@ package rest
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/tls"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/pem"
 	"fmt"
+	"math/big"
 	"net/http"
 	"time"
 
@@ -61,13 +68,48 @@ func startWebServiceRoutes() {
 	startGinGonic()
 }
 
+func getSelfSignedCert() tls.Certificate {
+	cert := &x509.Certificate{
+		SerialNumber: big.NewInt(1658),
+		Subject: pkix.Name{
+			Organization:  []string{"Duality Blockchain Solutions"},
+			Country:       []string{"USA"},
+			Province:      []string{"Texas"},
+			Locality:      []string{"San Antonio"},
+			StreetAddress: []string{"110 E Houston St, 7th Floor"},
+			PostalCode:    []string{"78205"},
+		},
+		NotBefore:    time.Now(),
+		NotAfter:     time.Now().AddDate(10, 0, 0),
+		SubjectKeyId: []byte{1, 2, 3, 4, 6},
+		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageClientAuth, x509.ExtKeyUsageServerAuth},
+		KeyUsage:     x509.KeyUsageDigitalSignature,
+	}
+	priv, _ := rsa.GenerateKey(rand.Reader, 2048)
+	pub := &priv.PublicKey
+
+	// Sign the certificate
+	certificate, _ := x509.CreateCertificate(rand.Reader, cert, cert, pub, priv)
+
+	certBytes := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: certificate})
+	keyBytes := pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: x509.MarshalPKCS1PrivateKey(priv)})
+
+	// Generate a key pair from your pem-encoded cert and key ([]byte).
+	x509Cert, _ := tls.X509KeyPair(certBytes, keyBytes)
+	return x509Cert
+}
+
 func startGinGonic() {
+	cert := getSelfSignedCert()
 	runner.server = &http.Server{
 		Addr:    runner.configuration.WebServer().AddressPortString(),
 		Handler: runner.router,
+		TLSConfig: &tls.Config{
+			Certificates: []tls.Certificate{cert},
+		},
 	}
-	// Start HTTP service
-	if err := runner.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+	// Start HTTPS service
+	if err := runner.server.ListenAndServeTLS("", ""); err != nil && err != http.ErrServerClosed {
 		panic(fmt.Errorf("ListenAndServe failed: %v", err))
 	}
 }
