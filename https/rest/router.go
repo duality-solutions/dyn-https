@@ -15,8 +15,8 @@ import (
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
-// WebBridgeRunner is used to run the node application.
-type WebBridgeRunner struct {
+// WebProxy is used to run the node application.
+type WebProxy struct {
 	dynamicd      *dynamic.Dynamicd
 	router        *gin.Engine
 	configuration *settings.Configuration
@@ -25,7 +25,7 @@ type WebBridgeRunner struct {
 	mode          string
 }
 
-var runner WebBridgeRunner
+var runner WebProxy
 
 // TODO: Add rate limitor
 // TODO: Add custom logging

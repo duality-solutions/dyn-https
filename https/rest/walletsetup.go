@@ -14,7 +14,7 @@ import (
 )
 
 // GetWalletSetupInfo gathers data configuration file and dynamicd to determine the current wallet setup status
-func (w *WebBridgeRunner) GetWalletSetupInfo() (*models.WalletSetupStatus, int, error) {
+func (w *WebProxy) GetWalletSetupInfo() (*models.WalletSetupStatus, int, error) {
 	status := w.configuration.WalletSetupStatus()
 	cmd := `dynamic-cli getwalletinfo`
 	reqCnd, _ := dynamic.NewRequest(cmd)
@@ -98,7 +98,7 @@ func (w *WebBridgeRunner) GetWalletSetupInfo() (*models.WalletSetupStatus, int, 
 // @Failure 400 {object} string "Bad request"
 // @Failure 500 {object} string "Internal error"
 // @Router /api/v1/wallet/setup [get]
-func (w *WebBridgeRunner) walletsetup(c *gin.Context) {
+func (w *WebProxy) walletsetup(c *gin.Context) {
 	status, httpStatus, err := w.GetWalletSetupInfo()
 	if err != nil {
 		strErrMsg := fmt.Sprintf("%v", err)
@@ -116,7 +116,7 @@ func (w *WebBridgeRunner) walletsetup(c *gin.Context) {
 // @Failure 400 {object} string "Bad request"
 // @Failure 500 {object} string "Internal error"
 // @Router /api/v1/wallet/setup/backup [post]
-func (w *WebBridgeRunner) setupmnemonicbackup(c *gin.Context) {
+func (w *WebProxy) setupmnemonicbackup(c *gin.Context) {
 	status, httpStatus, err := w.GetWalletSetupInfo()
 	if err != nil {
 		strErrMsg := fmt.Sprintf("%v", err)

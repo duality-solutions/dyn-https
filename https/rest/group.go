@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (w *WebBridgeRunner) groups(c *gin.Context) {
+func (w *WebProxy) groups(c *gin.Context) {
 	strCommand, _ := dynamic.NewRequest(`dynamic-cli getgroups`)
 	response, _ := <-w.dynamicd.ExecCmdRequest(strCommand)
 	var result interface{}
@@ -24,7 +24,7 @@ func (w *WebBridgeRunner) groups(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func (w *WebBridgeRunner) group(c *gin.Context) {
+func (w *WebProxy) group(c *gin.Context) {
 	groupID := c.Param("GroupID")
 	cmd := `dynamic-cli getgroupinfo "` + groupID + `"`
 	strCommand, err := dynamic.NewRequest(cmd)
@@ -45,7 +45,7 @@ func (w *WebBridgeRunner) group(c *gin.Context) {
 	return
 }
 
-func (w *WebBridgeRunner) walletgroups(c *gin.Context) {
+func (w *WebProxy) walletgroups(c *gin.Context) {
 	strCommand, _ := dynamic.NewRequest(`dynamic-cli mybdapaccounts`)
 	response, _ := <-w.dynamicd.ExecCmdRequest(strCommand)
 	myAccounts := make(map[string]models.Account)

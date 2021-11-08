@@ -25,7 +25,7 @@ const (
 )
 
 // GetLinks returns a list of pending or complete links from the Dynamic RPC server
-func (w *WebBridgeRunner) GetLinks(status LinkStatus) (*models.LinksResponse, error) {
+func (w *WebProxy) GetLinks(status LinkStatus) (*models.LinksResponse, error) {
 	var links models.LinksResponse
 	var cmdStr = ""
 	if status == Complete {
@@ -59,7 +59,7 @@ func (w *WebBridgeRunner) GetLinks(status LinkStatus) (*models.LinksResponse, er
 	return &links, nil
 }
 
-func (w *WebBridgeRunner) links(c *gin.Context) {
+func (w *WebProxy) links(c *gin.Context) {
 	cmd, _ := dynamic.NewRequest(`dynamic-cli link complete`)
 	response, _ := <-w.dynamicd.ExecCmdRequest(cmd)
 	complete := map[string]interface{}{}
@@ -107,7 +107,7 @@ func (w *WebBridgeRunner) links(c *gin.Context) {
 	c.JSON(http.StatusOK, myLinks)
 }
 
-func (w *WebBridgeRunner) linkrequest(c *gin.Context) {
+func (w *WebProxy) linkrequest(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		strErrMsg := fmt.Sprintf("Request body read all error %v", err)
@@ -139,7 +139,7 @@ func (w *WebBridgeRunner) linkrequest(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func (w *WebBridgeRunner) linkaccept(c *gin.Context) {
+func (w *WebProxy) linkaccept(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		strErrMsg := fmt.Sprintf("Request body read all error %v", err)
@@ -171,7 +171,7 @@ func (w *WebBridgeRunner) linkaccept(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func (w *WebBridgeRunner) sendlinkmessage(c *gin.Context) {
+func (w *WebProxy) sendlinkmessage(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		strErrMsg := fmt.Sprintf("Request body read all error %v", err)
@@ -215,7 +215,7 @@ func (w *WebBridgeRunner) sendlinkmessage(c *gin.Context) {
 	c.JSON(http.StatusOK, ret)
 }
 
-func (w *WebBridgeRunner) getlinkmessages(c *gin.Context) {
+func (w *WebProxy) getlinkmessages(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		strErrMsg := fmt.Sprintf("Request body read all error %v", err)

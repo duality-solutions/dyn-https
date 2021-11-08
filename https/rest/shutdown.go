@@ -33,7 +33,7 @@ func (a *AppShutdown) ShutdownAppliction() {
 	close(*a.Close)
 }
 
-func (w *WebBridgeRunner) shutdown(c *gin.Context) {
+func (w *WebProxy) shutdown(c *gin.Context) {
 	if w.shutdownApp != nil {
 		w.shutdownApp.ShutdownAppliction()
 		c.JSON(http.StatusOK, gin.H{"result": "WebBridge is shutting down."})

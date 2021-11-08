@@ -22,7 +22,7 @@ var restarting = false
 // @Success  200 {object} models.WebServerConfig	"ok"
 // @Failure  500 {object} string "Internal error"
 // @Router  /api/v1/config/web [get]
-func (w *WebBridgeRunner) getwebserver(c *gin.Context) {
+func (w *WebProxy) getwebserver(c *gin.Context) {
 	if w.configuration != nil {
 		c.JSON(http.StatusOK, gin.H{"result": w.configuration.WebServer()})
 	} else {
@@ -38,7 +38,7 @@ func (w *WebBridgeRunner) getwebserver(c *gin.Context) {
 // @Success  200 {object} models.WebServerConfig	"ok"
 // @Failure  500 {object} string "Internal error"
 // @Router  /api/v1/config/web [post]
-func (w *WebBridgeRunner) updatewebserver(c *gin.Context) {
+func (w *WebProxy) updatewebserver(c *gin.Context) {
 	if w.configuration != nil {
 		body, err := ioutil.ReadAll(c.Request.Body)
 		if err != nil {
@@ -82,7 +82,7 @@ func waitForRestart(timeout time.Duration) {
 // @Success  200 {object} string "ok"
 // @Failure  500 {object} string "Internal error"
 // @Router  /api/v1/config/web/restart [put]
-func (w *WebBridgeRunner) restartwebserver(c *gin.Context) {
+func (w *WebProxy) restartwebserver(c *gin.Context) {
 	if restarting {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Already waiting for a restart."})
 		return

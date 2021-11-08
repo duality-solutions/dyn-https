@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (w *WebBridgeRunner) handleJSONRPC(c *gin.Context) {
+func (w *WebProxy) handleJSONRPC(c *gin.Context) {
 	reqInput := models.JSONRPC{}
 	err := json.NewDecoder(c.Request.Body).Decode(&reqInput)
 	if err != nil {

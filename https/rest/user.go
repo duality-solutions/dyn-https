@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (w *WebBridgeRunner) users(c *gin.Context) {
+func (w *WebProxy) users(c *gin.Context) {
 	strCommand, _ := dynamic.NewRequest(`dynamic-cli getusers`)
 	response, _ := <-w.dynamicd.ExecCmdRequest(strCommand)
 	var result interface{}
@@ -24,7 +24,7 @@ func (w *WebBridgeRunner) users(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func (w *WebBridgeRunner) user(c *gin.Context) {
+func (w *WebProxy) user(c *gin.Context) {
 	userID := c.Param("UserID")
 	cmd := `dynamic-cli getuserinfo "` + userID + `"`
 	strCommand, err := dynamic.NewRequest(cmd)
@@ -45,7 +45,7 @@ func (w *WebBridgeRunner) user(c *gin.Context) {
 	return
 }
 
-func (w *WebBridgeRunner) walletusers(c *gin.Context) {
+func (w *WebProxy) walletusers(c *gin.Context) {
 	strCommand, _ := dynamic.NewRequest(`dynamic-cli mybdapaccounts`)
 	response, _ := <-w.dynamicd.ExecCmdRequest(strCommand)
 	myAccounts := make(map[string]models.Account)

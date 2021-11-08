@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (w *WebBridgeRunner) unlockwallet(c *gin.Context) {
+func (w *WebProxy) unlockwallet(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		strErrMsg := fmt.Sprintf("Request body read all error %v", err)
@@ -71,7 +71,7 @@ func (w *WebBridgeRunner) unlockwallet(c *gin.Context) {
 	}
 }
 
-func (w *WebBridgeRunner) lockwallet(c *gin.Context) {
+func (w *WebProxy) lockwallet(c *gin.Context) {
 	strCommand, _ := dynamic.NewRequest(`dynamic-cli walletlock`)
 	response, _ := <-w.dynamicd.ExecCmdRequest(strCommand)
 	if strings.HasPrefix(response, "null") {
@@ -97,7 +97,7 @@ func (w *WebBridgeRunner) lockwallet(c *gin.Context) {
 	}
 }
 
-func (w *WebBridgeRunner) encryptwallet(c *gin.Context) {
+func (w *WebProxy) encryptwallet(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		strErrMsg := fmt.Sprintf("Request body read all error %v", err)
@@ -141,7 +141,7 @@ func (w *WebBridgeRunner) encryptwallet(c *gin.Context) {
 	}
 }
 
-func (w *WebBridgeRunner) changepassphrase(c *gin.Context) {
+func (w *WebProxy) changepassphrase(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		strErrMsg := fmt.Sprintf("Request body read all error %v", err)
@@ -193,7 +193,7 @@ func (w *WebBridgeRunner) changepassphrase(c *gin.Context) {
 	}
 }
 
-func (w *WebBridgeRunner) walletinfo(c *gin.Context) {
+func (w *WebProxy) walletinfo(c *gin.Context) {
 	strCommand, _ := dynamic.NewRequest(`dynamic-cli getwalletinfo`)
 	response, _ := <-w.dynamicd.ExecCmdRequest(strCommand)
 	var result interface{}
@@ -214,7 +214,7 @@ func (w *WebBridgeRunner) walletinfo(c *gin.Context) {
 // @Failure 400 {object} models.ErrorResponse "Bad request"
 // @Failure 500 {object} models.ErrorResponse "Internal error"
 // @Router /api/v1/wallet/mnemonic [get]
-func (w *WebBridgeRunner) getmnemonic(c *gin.Context) {
+func (w *WebProxy) getmnemonic(c *gin.Context) {
 	strCommand, _ := dynamic.NewRequest(`dynamic-cli dumphdinfo`)
 	response, _ := <-w.dynamicd.ExecCmdRequest(strCommand)
 	if strings.Contains(response, "Please enter the wallet passphrase with walletpassphrase first") {
@@ -247,7 +247,7 @@ func (w *WebBridgeRunner) getmnemonic(c *gin.Context) {
 // @Failure 400 {object} string "Bad request"
 // @Failure 500 {object} string "Internal error"
 // @Router /api/v1/wallet/mnemonic [post]
-func (w *WebBridgeRunner) postmnemonic(c *gin.Context) {
+func (w *WebProxy) postmnemonic(c *gin.Context) {
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		strErrMsg := fmt.Sprintf("Request body read all error %v", err)
@@ -317,7 +317,7 @@ func (w *WebBridgeRunner) postmnemonic(c *gin.Context) {
 // @Failure 400 {object} string "Bad request"
 // @Failure 500 {object} string "Internal error"
 // @Router /api/v1/wallet/defaultaddress [get]
-func (w *WebBridgeRunner) defaultaddress(c *gin.Context) {
+func (w *WebProxy) defaultaddress(c *gin.Context) {
 	cmd := `dynamic-cli getaccountaddress "default"`
 	reqCnd, _ := dynamic.NewRequest(cmd)
 	response, _ := <-w.dynamicd.ExecCmdRequest(reqCnd)
@@ -353,7 +353,7 @@ func (w *WebBridgeRunner) defaultaddress(c *gin.Context) {
 // @Failure 400 {object} string "Bad request"
 // @Failure 500 {object} string "Internal error"
 // @Router /api/v1/wallet/transactions [get]
-func (w *WebBridgeRunner) gettransactions(c *gin.Context) {
+func (w *WebProxy) gettransactions(c *gin.Context) {
 	cmd := `dynamic-cli listtransactions`
 	reqCnd, _ := dynamic.NewRequest(cmd)
 	response, _ := <-w.dynamicd.ExecCmdRequest(reqCnd)

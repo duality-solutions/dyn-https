@@ -15,7 +15,7 @@ import (
 )
 
 // GetBlockchainOverview returns the current blockchain overview status
-func (w *WebBridgeRunner) GetBlockchainOverview() (*models.BlockchainOverview, int, error) {
+func (w *WebProxy) GetBlockchainOverview() (*models.BlockchainOverview, int, error) {
 	cmd, _ := dynamic.NewRequest("dynamic-cli syncstatus")
 	response, _ := <-w.dynamicd.ExecCmdRequest(cmd)
 	if strings.Contains(response, "Error:") {
@@ -48,7 +48,7 @@ func (w *WebBridgeRunner) GetBlockchainOverview() (*models.BlockchainOverview, i
 }
 
 // GetWalletBalanceOverview returns the current wallet overview status
-func (w *WebBridgeRunner) GetWalletBalanceOverview() (*models.WalletOverview, int, error) {
+func (w *WebProxy) GetWalletBalanceOverview() (*models.WalletOverview, int, error) {
 	cmd, _ := dynamic.NewRequest(`dynamic-cli getwalletinfo`)
 	response, _ := <-w.dynamicd.ExecCmdRequest(cmd)
 	if strings.Contains(response, "Error:") {
@@ -120,7 +120,7 @@ func (w *WebBridgeRunner) GetWalletBalanceOverview() (*models.WalletOverview, in
 }
 
 // GetAccountOverview returns the current account overview status
-func (w *WebBridgeRunner) GetAccountOverview() (*models.AccountOverview, int, error) {
+func (w *WebProxy) GetAccountOverview() (*models.AccountOverview, int, error) {
 	cmd, _ := dynamic.NewRequest("dynamic-cli mybdapaccounts")
 	response, _ := <-w.dynamicd.ExecCmdRequest(cmd)
 	if strings.Contains(response, "Error:") {
@@ -158,7 +158,7 @@ func (w *WebBridgeRunner) GetAccountOverview() (*models.AccountOverview, int, er
 // @Failure 400 {object} string "Bad request"
 // @Failure 500 {object} string "Internal error"
 // @Router /api/v1/overview [get]
-func (w *WebBridgeRunner) overview(c *gin.Context) {
+func (w *WebProxy) overview(c *gin.Context) {
 	response := models.OverviewResponse{}
 	blockchain, httpStatus, err := w.GetBlockchainOverview()
 	if err != nil {

@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (w *WebBridgeRunner) getinfo(c *gin.Context) {
+func (w *WebProxy) getinfo(c *gin.Context) {
 	var info models.GetInfoData
 	req, _ := dynamic.NewRequest("dynamic-cli getinfo")
 	err := json.Unmarshal([]byte(<-w.dynamicd.ExecCmdRequest(req)), &info)
@@ -21,7 +21,7 @@ func (w *WebBridgeRunner) getinfo(c *gin.Context) {
 	c.JSON(http.StatusOK, info)
 }
 
-func (w *WebBridgeRunner) syncstatus(c *gin.Context) {
+func (w *WebProxy) syncstatus(c *gin.Context) {
 	var status models.SyncStatus
 	req, _ := dynamic.NewRequest("dynamic-cli syncstatus")
 	err := json.Unmarshal([]byte(<-w.dynamicd.ExecCmdRequest(req)), &status)
