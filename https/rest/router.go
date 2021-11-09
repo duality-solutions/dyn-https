@@ -41,6 +41,7 @@ var runner WebProxy
 
 // TODO: Add rate limitor
 // TODO: Add custom logging
+// TODO: Add admin username and password commands
 
 // StartWebServiceRouter is used to setup the Rest server routes
 func StartWebServiceRouter(c *settings.Configuration, d *dynamic.Dynamicd, a *AppShutdown, m string) {
