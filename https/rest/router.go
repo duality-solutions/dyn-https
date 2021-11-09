@@ -34,13 +34,13 @@ type WebProxy struct {
 	shutdownApp   *AppShutdown
 	server        *http.Server
 	mode          string
+	Admins        map[string]string
 }
 
 var runner WebProxy
 
 // TODO: Add rate limitor
 // TODO: Add custom logging
-// TODO: Add authentication
 
 // StartWebServiceRouter is used to setup the Rest server routes
 func StartWebServiceRouter(c *settings.Configuration, d *dynamic.Dynamicd, a *AppShutdown, m string) {
@@ -48,6 +48,7 @@ func StartWebServiceRouter(c *settings.Configuration, d *dynamic.Dynamicd, a *Ap
 	runner.dynamicd = d
 	runner.shutdownApp = a
 	runner.mode = m
+	runner.Admins = c.AdminArrayToMap()
 	setupStatus, _, err := runner.GetWalletSetupInfo()
 	if err == nil {
 		runner.configuration.UpdateWalletSetup(*setupStatus)
@@ -59,6 +60,7 @@ func startWebServiceRoutes() {
 	gin.SetMode(runner.mode)
 	runner.router = gin.Default()
 	runner.router.Use(AllowCIDR(runner.configuration.WebServer().AllowCIDR))
+	runner.router.Use(BasicAuth(runner.Admins))
 	setupAdminWebConsole()
 	api := runner.router.Group("/api")
 	version := api.Group("/v1")
