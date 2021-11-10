@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"dyn-https/blockchain/dynamic"
+	"dyn-https/configs"
+	"dyn-https/configs/settings"
 	"dyn-https/https/rest"
 	"dyn-https/util"
 
@@ -29,7 +31,7 @@ func unlockWallet(d *dynamic.Dynamicd) bool {
 
 func appCommandLoop(acc *[]dynamic.Account, al *dynamic.ActiveLinks,
 	shutdown *rest.AppShutdown, d *dynamic.Dynamicd,
-	status *dynamic.SyncStatus, sync bool) {
+	status *dynamic.SyncStatus, sync bool, c *settings.Configuration) {
 	go func() {
 		var err error
 		var unlocked = false
@@ -74,6 +76,13 @@ func appCommandLoop(acc *[]dynamic.Account, al *dynamic.ActiveLinks,
 					}
 				} else if strings.HasPrefix(cmdText, "restart") {
 					rest.RestartWebServiceRouter()
+				} else if strings.HasPrefix(cmdText, "useradd") {
+					user, err := configs.AdminUserCommand(c, cmdText)
+					if err != nil {
+						util.Error.Println("User add command failed. %v\n", err)
+					} else {
+						util.Info.Printf("User %v successfully added or updated\n", user)
+					}
 				} else {
 					util.Warning.Println("Invalid command", cmdText)
 					status, err = d.GetSyncStatus()

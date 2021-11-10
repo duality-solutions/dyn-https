@@ -118,8 +118,9 @@ func (c *Configuration) Load(dir, seperator string) error {
 		util.Info.Println("Configuration loaded successfully.")
 	}
 	if c.configFile.Admins == nil {
-		admin := models.Admin{UserName: "admin", ExpectedHash: "u9cYLNDulUiPGh5vP+DY+U7Q0U5NsdznE/6CoyMcUj0="}
-		admins := []models.Admin{admin}
+		// admin with password test
+		//admin := models.Admin{UserName: "admin", ExpectedHash: "u9cYLNDulUiPGh5vP+DY+U7Q0U5NsdznE/6CoyMcUj0="}
+		admins := []models.Admin{}
 		c.configFile.Admins = admins
 		c.updateFile()
 	}
@@ -140,4 +141,24 @@ func (c *Configuration) AdminArrayToMap() map[string]string {
 		}
 	}
 	return admins
+}
+
+func (c *Configuration) UpdateAdmins(admin models.Admin) {
+	c.mut.Lock()
+	defer c.mut.Unlock()
+	index := -1
+	for i, value := range c.configFile.Admins {
+		if value.UserName == admin.UserName {
+			index = i
+			break
+		}
+	}
+	if index != -1 {
+		c.configFile.Admins[index] = admin
+	} else {
+		c.configFile.Admins = append(c.configFile.Admins, admin)
+	}
+	// update config file
+	c.updateFile()
+	return
 }

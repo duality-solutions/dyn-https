@@ -148,7 +148,7 @@ func Init(version, githash string) error {
 			util.Info.Printf("Found %v links\n", len(al.Links))
 		}
 
-		appCommandLoop(acc, al, &shutdown, dynamicd, status, sync)
+		appCommandLoop(acc, al, &shutdown, dynamicd, status, sync, &config)
 
 		for {
 			select {
