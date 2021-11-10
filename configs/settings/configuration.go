@@ -61,6 +61,15 @@ func (c *Configuration) updateFile() {
 func (c *Configuration) ToJSON() models.ConfigurationFile {
 	c.mut.Lock()
 	defer c.mut.Unlock()
+	// remove admin
+	newAdmins := []models.Admin{}
+	if c.configFile.Admins != nil {
+		for _, admin := range c.configFile.Admins {
+			admin.ExpectedHash = ""
+			newAdmins = append(newAdmins, admin)
+		}
+	}
+	c.configFile.Admins = newAdmins
 	return c.configFile
 }
 
