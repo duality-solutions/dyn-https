@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"dyn-https/models"
 	"dyn-https/util"
 )
 
@@ -40,6 +41,30 @@ func NewRequest(cmd string) (*RPCRequest, error) {
 		}
 	} else {
 		req.Method = strings.TrimSpace(cmd)
+	}
+	req.JSONRPC = "1.0"
+	req.ID, _ = util.RandomHashString(9)
+	return &req, nil
+}
+
+// GetNewRequest returns a new JSON-RPC 1.0 request object given the raw command.
+func GetNewRequest(jsonRPC models.JSONRPC) (*RPCRequest, error) {
+	var req RPCRequest
+	req.Method = jsonRPC.Method
+	if len(jsonRPC.Params) > 0 {
+		req.Params = make([]interface{}, len(jsonRPC.Params))
+	}
+	for i, param := range jsonRPC.Params {
+		switch param.(type) {
+		case int:
+			req.Params[i] = param
+		case float64:
+			req.Params[i] = param
+		case bool:
+			req.Params[i] = param
+		case string:
+			req.Params[i] = param
+		}
 	}
 	req.JSONRPC = "1.0"
 	req.ID, _ = util.RandomHashString(9)

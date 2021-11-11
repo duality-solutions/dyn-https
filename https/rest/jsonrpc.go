@@ -18,30 +18,13 @@ func (w *WebProxy) handleJSONRPC(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
-	strRequest := "dynamic-cli " + reqInput.Method
-	for _, param := range reqInput.Params {
-		switch param.(type) {
-		case int:
-			val, ok := param.(int)
-			if ok {
-				strRequest += ` ` + fmt.Sprintf("%v", val)
-			}
-		case float64:
-			val, ok := param.(float64)
-			if ok {
-				strRequest += ` ` + fmt.Sprintf("%v", val)
-			}
-		case bool:
-			val, ok := param.(bool)
-			if ok {
-				strRequest += ` ` + fmt.Sprintf("%v", val)
-			}
-		case string:
-			strRequest += ` "` + fmt.Sprintf("%v", param) + `"`
-		}
+	req, err := dynamic.GetNewRequest(reqInput)
+	if err != nil {
+		strErrMsg := fmt.Sprintf("GetNewRequest error %v", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": strErrMsg})
+		return
 	}
-	reqOutput, _ := dynamic.NewRequest(strRequest)
-	response, _ := <-w.dynamicd.ExecCmdRequest(reqOutput)
+	response, _ := <-w.dynamicd.ExecCmdRequest(req)
 	var result interface{}
 	err = json.Unmarshal([]byte(response), &result)
 	if err != nil {
