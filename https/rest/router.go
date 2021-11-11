@@ -191,6 +191,9 @@ func setupBlockchainRoutes(currentVersion *gin.RouterGroup) {
 	blockchain.GET("/users/:UserID", runner.user)
 	blockchain.GET("/groups", runner.groups)
 	blockchain.GET("/groups/:GroupID", runner.group)
+	blockchain.POST("/audit", runner.addaudit)
+	blockchain.GET("/audit/:Id", runner.getaudit)
+	blockchain.GET("/audit/verify/:Hash", runner.verifyaudit)
 }
 
 // TODO: follow https://rest.bitcoin.com for rest endpoints
