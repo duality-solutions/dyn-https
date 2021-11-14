@@ -3,6 +3,7 @@ package rest
 import (
 	"dyn-https/blockchain/dynamic"
 	"dyn-https/models"
+	"dyn-https/util"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -29,9 +30,19 @@ func (w *WebProxy) addaudit(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": strErrMsg})
 		return
 	}
+
+	jsonRPC := models.JSONRPC{}
+	jsonRPC.ID, _ = util.RandomHashString(9)
+	jsonRPC.Method = "audit"
+	jsonRPC.JSONRPC = "1.0"
+	jsonRPC.Params = make([]interface{}, 5)
 	//audit add "hash_array" ( "account" ) ( "description" ) ( "algorithm" )
-	cmd, _ := dynamic.NewRequest(`dynamic-cli audit add "` + req.HashArray + `" "` + req.Account +
-		`"` + `" "` + req.Description + `"` + `" "` + req.Algorithm + `"`)
+	jsonRPC.Params[0] = "add"
+	jsonRPC.Params[1] = req.HashArray
+	jsonRPC.Params[2] = req.Account
+	jsonRPC.Params[3] = req.Description
+	jsonRPC.Params[4] = req.Algorithm
+	cmd, err := dynamic.GetNewRequest(jsonRPC)
 	response, _ := <-w.dynamicd.ExecCmdRequest(cmd)
 	var result interface{}
 	err = json.Unmarshal([]byte(response), &result)
@@ -44,11 +55,18 @@ func (w *WebProxy) addaudit(c *gin.Context) {
 }
 
 func (w *WebProxy) getaudit(c *gin.Context) {
-	Id := c.Param("UserID")
-	cmd, _ := dynamic.NewRequest(`dynamic-cli audit get "` + Id + `"`)
+	Id := c.Param("Id")
+	jsonRPC := models.JSONRPC{}
+	jsonRPC.ID, _ = util.RandomHashString(9)
+	jsonRPC.Method = "audit"
+	jsonRPC.JSONRPC = "1.0"
+	jsonRPC.Params = make([]interface{}, 2)
+	jsonRPC.Params[0] = "get"
+	jsonRPC.Params[1] = Id
+	cmd, err := dynamic.GetNewRequest(jsonRPC)
 	response, _ := <-w.dynamicd.ExecCmdRequest(cmd)
 	var result interface{}
-	err := json.Unmarshal([]byte(response), &result)
+	err = json.Unmarshal([]byte(response), &result)
 	if err != nil {
 		strErrMsg := fmt.Sprintf("Results JSON unmarshal error %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": strErrMsg})
@@ -59,10 +77,17 @@ func (w *WebProxy) getaudit(c *gin.Context) {
 
 func (w *WebProxy) verifyaudit(c *gin.Context) {
 	hash := c.Param("Hash")
-	cmd, _ := dynamic.NewRequest(`dynamic-cli audit verify "` + hash + `"`)
+	jsonRPC := models.JSONRPC{}
+	jsonRPC.ID, _ = util.RandomHashString(9)
+	jsonRPC.Method = "audit"
+	jsonRPC.JSONRPC = "1.0"
+	jsonRPC.Params = make([]interface{}, 2)
+	jsonRPC.Params[0] = "verify"
+	jsonRPC.Params[1] = hash
+	cmd, err := dynamic.GetNewRequest(jsonRPC)
 	response, _ := <-w.dynamicd.ExecCmdRequest(cmd)
 	var result interface{}
-	err := json.Unmarshal([]byte(response), &result)
+	err = json.Unmarshal([]byte(response), &result)
 	if err != nil {
 		strErrMsg := fmt.Sprintf("Results JSON unmarshal error %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": strErrMsg})
